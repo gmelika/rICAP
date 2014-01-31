@@ -74,48 +74,6 @@ class ICAPServer
 	end
 end
 
-=begin
-	      puts "\r\nTHIS IS RESPONSE"
-	      response_header = []
-	      response_header << "ICAP/1.0 200 OK"
-	      response_header << "Date: Mon, 10 Jan 2000  09:55:21 GMT"
-	      response_header << "Server: rICAP/1.0"
-	      response_header << "Connection: close"
-	      response_header << "ISTag: \"1234567890\""
-	      puts "TO JEST MMMMMMMMMMMM"
-	      puts @m
-	      response_header << "Encapsulated: #{@m.join(", ")}"
-	      response = []
-	      response << response_header.join("\r\n")
-	      msg2.each do |response_part|
-		response << response_part
-		puts "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-		puts response_part
-		puts response_part.size+2
-	      end
-	      puts "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-		
-	      response.delete_at(1)
-	      response[-1] = content.join
-	      
-	      r = response.join("\r\n\r\n")
-	      puts r
-	      clientSocket.puts r
-	      
-	    elsif msg[0] =~ /^REQMOD /
-	      puts "PARSING REQMOD"
-	    else
-	      puts "BAD REQUEST"
-	    end
-	  end
-	end #loop
-      end #Thread.start
-    end #loop
-  end #start
-  =end
-	
-end #ICAPServer  
-
 s = ICAPServer.new
 s.start
 
