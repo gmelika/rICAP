@@ -12,8 +12,8 @@ class ICAPResponseRESPMOD
         @entities = {}
         if @requestRESPMOD.entities.key?("res-body")
             @entities["res-body"] = []
-            @entities["res-body"] << requestRESPMOD.entities["res-body"].size.to_s(16)
             body = HTMLModifier.new (requestRESPMOD.entities["res-body"])
+            @entities["res-body"] << body.size.to_s(16)
             @entities["res-body"] << body.run
             @entities["res-body"] << "0\r\n\r\n"
         end
