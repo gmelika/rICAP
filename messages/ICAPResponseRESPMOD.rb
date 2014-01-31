@@ -9,11 +9,17 @@ class ICAPResponseRESPMOD
         @header << "Server: rICAP 0.1"
         @header << "Connection: close"
         @header << "ISTag: \"1234567890\""
+        puts 'header initialized'
         @entities = {}
+        @contentType = nil
+        if requestRESPMOD.entities.key?("res-hdr")
+            @entities["res-hdr"] = []
+            @entities["res-hdr"] << requestRESPMOD.entities["res-hdr"].join()
+        end
         if @requestRESPMOD.entities.key?("res-body")
             @entities["res-body"] = []
-            body = requestRESPMOD.entities["res-body"]
-            if ( @requestRESPMOD.header.key?('Content-Type') =~ /text\/html(;\s*charset=(.*))?/ )
+            body = requestRESPMOD.entities["res-body"][1]
+            if ( @entities["res-hdr"].join("\r\n") =~ /Content-Type:\s*text\/html(;\s*charset=(.*))?/mi )
                 puts "is html"
                 charset = $~[2]
                 puts "charset = #{charset}"
@@ -26,13 +32,6 @@ class ICAPResponseRESPMOD
             @entities["res-body"] << body.size.to_s(16)
             @entities["res-body"] << body
             @entities["res-body"] << "0\r\n\r\n"
-        end
-        if requestRESPMOD.entities.key?("res-hdr")
-            @entities["res-hdr"] = []
-            @entities["res-hdr"] << requestRESPMOD.entities["res-hdr"].join()
-        end
-        if requestRESPMOD.entities.key?("req-hdr")
-
         end
     end
 

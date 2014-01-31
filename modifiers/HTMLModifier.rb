@@ -6,7 +6,7 @@ class HTMLModifier
     def initialize(html, charset = 'UTF-8')
         @htmlText = html
         @charset = charset
-        @html = Nokogiri::HTML(@htmlText, nil, @charset) do |config|
+        @html = Nokogiri::HTML(@htmlText) do |config|
             config.nonet
         end
         @isHTML = @html.search('html').count > 0
@@ -17,10 +17,7 @@ class HTMLModifier
             return @htmlText
         end
         @html.css('.advertisement').remove
-        puts "==================================== START Modified HTML ===================================================="
         result = @html.to_html
-        puts result
-        puts "==================================== STOP Modified HTML ===================================================="
         return result
     end
 
