@@ -63,7 +63,6 @@ class ICAPResponseRESPMOD
 
         puts "==================================== START RESPMOD ===================================================="
         result = message.join()
-        puts result
         puts "==================================== STOP RESPMOD ===================================================="
         return result
     end
