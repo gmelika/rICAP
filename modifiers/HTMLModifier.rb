@@ -3,9 +3,10 @@
 require 'nokogiri'
 
 class HTMLModifier
-    def initialize(html)
+    def initialize(html, charset)
         @htmlText = html
-        @html = Nokogiri::HTML(@htmlText) do |config|
+        @charset = charset
+        @html = Nokogiri::HTML(@htmlText, nil, @charset) do |config|
             config.nonet
         end
         @isHTML = @html.search('html').count > 0
