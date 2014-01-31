@@ -3,7 +3,7 @@
 require 'nokogiri'
 
 class HTMLModifier
-    def initialize(html, charset)
+    def initialize(html, charset = 'UTF-8')
         @htmlText = html
         @charset = charset
         @html = Nokogiri::HTML(@htmlText, nil, @charset) do |config|

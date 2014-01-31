@@ -15,7 +15,9 @@ class ICAPResponseRESPMOD
             body = requestRESPMOD.entities["res-body"]
             if ( @requestRESPMOD.header.key?('Content-Type') =~ /text\/html/ )
                 @requestRESPMOD.header.key?('Content-Type') =~ /charset=(.*)/
-                body = HTMLModifier.new (body, $~.captures).run
+                charset = $~.captures
+                html = HTMLModifier.new(body, charset)
+                body = html.run
             end
             @entities["res-body"] << body.size.to_s(16)
             @entities["res-body"] << body
