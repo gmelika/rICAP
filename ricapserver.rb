@@ -14,7 +14,7 @@ class ICAPServer
 	def initialize
 		@serverSocket = TCPServer.new 1344
 	end
-	
+
 	def get_entity(clientSocket, entity_name, requestRESPMOD)
 		entity_content = []
 		loop do
@@ -24,7 +24,7 @@ class ICAPServer
 		end
 		requestRESPMOD.add_entity(entity_name, entity_content)  
 	end
-	
+
 	def start
 		puts "Starting..."
 		loop do
@@ -37,12 +37,12 @@ class ICAPServer
 						requestHeader.content_addline(rcvline)
 						break if ((rcvline =~ /^\r\n$/) && (requestHeader.content[-2] =~ /\r\n$/))
 					end
-					
+
 					if requestHeader.type == :OPTIONS
 						puts "-> SENDING OPTIONS RESPONSE"
 						clientSocket.puts ICAPResponseOptions.new.render
 						puts "-> SENT OPTIONS RESPONSE"
-						
+
 					elsif requestHeader.type == :RESPMOD
 						requestRESPMOD = ICAPRequestRESPMOD.new (requestHeader)
 						requestRESPMOD.entities_to_get.each do |entity_name|
@@ -57,21 +57,22 @@ class ICAPServer
 							requestRESPMOD.remove_resbody_chunk_size
 							puts "-> REMOVED RESBODY CHUNK SIZE"
 						end
-						
+
 						responseRESPMOD = ICAPResponseRESPMOD.new(requestRESPMOD)
 						puts "-> CREATED ICAPResponseRESPMOD"
 						clientSocket.puts responseRESPMOD.render
-						
+
 					elsif requestHeader.type == :REQMOD
 						puts :REQMOD
-						
+
 					else
 						puts :UNKNOWN
 					end
-	end #Thread in loop
-      end #Thread
-    end #main loop
-  end # def start
+				end
+			end
+		end
+	end
+end
 
 =begin
 	      puts "\r\nTHIS IS RESPONSE"
