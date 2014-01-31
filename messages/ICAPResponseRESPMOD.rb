@@ -13,11 +13,15 @@ class ICAPResponseRESPMOD
         if @requestRESPMOD.entities.key?("res-body")
             @entities["res-body"] = []
             body = requestRESPMOD.entities["res-body"]
-            if ( @requestRESPMOD.header.key?('Content-Type') =~ /text\/html/ )
-                @requestRESPMOD.header.key?('Content-Type') =~ /charset=(.*)/
-                charset = $~.captures
+            if ( @requestRESPMOD.header.key?('Content-Type') =~ /text\/html(;\s*charset=(.*))?/ )
+                puts "is html"
+                charset = $~[2]
+                puts "charset = #{charset}"
                 html = HTMLModifier.new(body, charset)
                 body = html.run
+                puts "body.length after = #{body.size}" 
+            else
+                puts "is NOT html"
             end
             @entities["res-body"] << body.size.to_s(16)
             @entities["res-body"] << body
