@@ -23,9 +23,6 @@ class ICAPServer
       break if ((rcvline =~ /^\r\n$/) && (entity_content[-2] =~ /\r\n$/))
     end
     requestRESPMOD.add_entity(entity_name, entity_content)  
-    #puts "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
-    #puts entity_content
-    #puts "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
   end
   
   def start
@@ -41,16 +38,10 @@ class ICAPServer
 	    break if ((rcvline =~ /^\r\n$/) && (requestHeader.content[-2] =~ /\r\n$/))
 	  end
 	  
-	  #puts "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
-	  #puts requestHeader.content
-	  #puts "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
-	  #puts "-> ODEBRANO HEADER"
-	  #puts requestHeader.type
-	  
 	  if requestHeader.type == :OPTIONS
-	    puts "-> WYSYLANIE OPTIONS RESPONSE"
+	    puts "-> SENDING OPTIONS RESPONSE"
 	    clientSocket.puts ICAPResponseOptions.new.render
-	    puts "-> WYSLANO OPTIONS RESPONSE"
+	    puts "-> SENT OPTIONS RESPONSE"
 	
 	  elsif requestHeader.type == :RESPMOD
 	    requestRESPMOD = ICAPRequestRESPMOD.new (requestHeader)
@@ -58,17 +49,17 @@ class ICAPServer
 	      get_entity(clientSocket, entity_name, requestRESPMOD)
 	    end
 	    if requestRESPMOD.need100continue?
-	      puts "-> POTRZEBA 100"
+	      puts "-> NEED 100"
 	      clientSocket.puts ICAPResponseContinue.new.render
-	      puts "-> WYSLANO 100"
+	      puts "-> SENT 100"
 	      get_entity(clientSocket, "res-body", requestRESPMOD)
-	      puts "-> ODEBRANO DANE"
+	      puts "-> RECEIVED DATA"
 	      requestRESPMOD.remove_resbody_chunk_size
-	      puts "-> USUNIETO RESBODY CHUNK SIZE"
+	      puts "-> REMOVED RESBODY CHUNK SIZE"
 	    end
 	    
 	    responseRESPMOD = ICAPResponseRESPMOD.new(requestRESPMOD)
-	    puts "-> UTWORZONO ICAPResponseRESPMOD"
+	    puts "-> CREATED ICAPResponseRESPMOD"
 	    clientSocket.puts responseRESPMOD.render
 	    
 	  elsif requestHeader.type == :REQMOD
