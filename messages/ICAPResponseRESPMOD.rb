@@ -9,23 +9,26 @@ class ICAPResponseRESPMOD
         @header << "Server: rICAP 0.1"
         @header << "Connection: close"
         @header << "ISTag: \"1234567890\""
-        puts 'header initialized'
         @entities = {}
         @contentType = nil
+puts 'headers initialized'
         if requestRESPMOD.entities.key?("res-hdr")
             @entities["res-hdr"] = []
             @entities["res-hdr"] << requestRESPMOD.entities["res-hdr"].join()
         end
         if @requestRESPMOD.entities.key?("res-body")
             @entities["res-body"] = []
-            body = requestRESPMOD.entities["res-body"][1]
-            if ( @entities["res-hdr"].join("\r\n") =~ /Content-Type:\s*text\/html(;\s*charset=(.*))?/mi )
+            body = requestRESPMOD.entities["res-body"]
+            @bodyLength = body.size
+            puts "body.length before = #{body.size}"
+            if ( @entities["res-hdr"].join("\r\n") =~ /Content-Type:\s*text\/html(;\s*charset=(.*?)\r\n)?/mi )
                 puts "is html"
                 charset = $~[2]
                 puts "charset = #{charset}"
                 html = HTMLModifier.new(body, charset)
                 body = html.run
-                puts "body.length after = #{body.size}" 
+                @bodyLength = body.size
+                puts "body.length after = #{@bodyLength}"
             else
                 puts "is NOT html"
             end
@@ -56,7 +59,10 @@ class ICAPResponseRESPMOD
         @header << "\r\n"
 
         message = []
-        message << @header.join("\r\n")
+        hdrs = @header.join("\r\n")
+        hdrs = hdrs.gsub(/Content-Length:\s*\d+\r\n/mi, "Content-Length: #{@bodyLength}\r\n")
+puts hdrs
+        message << hdrs #@header.join("\r\n").gsub(/Content-Length:\s*\d+\r\n/mi, "Content-Length: #{@bodyLength}\r\n")
 
         message << @entities["res-hdr"].join()
         message << @entities["res-body"].join("\r\n")

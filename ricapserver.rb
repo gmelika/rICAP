@@ -7,14 +7,24 @@ require_relative 'messages/ICAPResponseOptions'
 require_relative 'messages/ICAPResponseContinue'
 require_relative 'messages/ICAPResponseRESPMOD'
 
-
-
 class ICAPServer
-
     def initialize
         @serverSocket = TCPServer.new 1344
     end
 
+    def send_string(sock, str)
+puts "sending #{str.length} bytes"
+        begin
+            while str != nil && str.size > 0
+                sent = sock.send(str, 0)
+puts "sent #{sent}"
+                str = str[sent..-1]
+            end
+        rescue Exception => e #IOError, SocketError, SystemCallError
+        # eof = true
+            puts "SendError: #{ e } (#{ e.class })"
+        end
+    end
     def get_entity(clientSocket, entity_name, requestRESPMOD)
         entity_content = []
         loop do
@@ -26,6 +36,7 @@ class ICAPServer
     end
 
     def start
+        begin
         puts "Starting..."
         loop do
             Thread.start(@serverSocket.accept) do |clientSocket|
@@ -61,8 +72,7 @@ class ICAPServer
                         puts "-> CREATING ICAPResponseRESPMOD"
                         responseRESPMOD = ICAPResponseRESPMOD.new(requestRESPMOD)
                         puts "-> CREATED ICAPResponseRESPMOD"
-                        clientSocket.puts responseRESPMOD.render
-
+                        send_string(clientSocket, responseRESPMOD.render)
                     elsif requestHeader.type == :REQMOD
                         puts :REQMOD
 
@@ -72,6 +82,13 @@ class ICAPServer
                 end
             end
         end
+rescue Exception => e
+      # Displays Error Message
+      puts "Error: #{ e } (#{ e.class })"
+    ensure
+#      clientSocket.close
+      puts "ensure: Closing"
+    end
     end
 end
 
